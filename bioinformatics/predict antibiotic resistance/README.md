@@ -3,7 +3,8 @@
 Machine learning is useful for detecting patterns within data! A usecase is predicting antibiotic resistance from bacterial DNA sequences. 
 By training a model on bacterial DNA sequences that is labeled with if the bacteria is resistant to antibiotics, we can learn what features indicate resistance and perhaps identify a specific gene encoding for antibiotic resistance. 
 
-# Data
+# Notebook Details
+## Data
 https://www.kaggle.com/code/drscarlat/predict-antibiotic-resistance-w-gene-sequence/input
 
 The data is a synthetic dataset with a gene sequence for antibiotic resistance hidden within the bacteria sequence.
@@ -16,32 +17,38 @@ The columns are:
 
 Initial data exploration revealed that the dataset is relatively balanced and there is no missing data. 
 
-# Preprocessing
+## Preprocessing
 Since we are working with strings, we need to tokenize the data. We approach the problem from two strategies:
 - Tokenizing by the singular nucleotide bases themselves (alphabet =  A/C/G/T)
 - Tokenizing by codons or groups of three nucleotide bases, leading to a larger alphabet that is more informative
 
-# Model Building
+## Model Building
 This is a binary classification supervised learning problem where **order is important**. Shallow models cannot deal with ordered sequences, so we must build a model that can analyze such sequences! We decided to use the Sequential model class from Keras to handle this, and to use **1D convolutional layers and a bidirectional GRU layer** to capture information from sequences. Details on the specific layers are in later section. 
-
 We will split data into training (72%), validation (18%), and a final testing (10%) data set. 
 
 
-# Testing Results! 
+## Testing Results! 
 AUC, appropriate for when there are roughly equal numbers of observations for each class
 - Initial model using nucelotides: .755
 - Model using codons: 0.989!!
 
 I attempted to identify a specific gene encoding for antibiotic resistance SHAP, but that killed my local machine. 
-I then tried a combination KerasRegressor, the PermutationImportance class, and ELI5 and identified a tinyyyy
+I then tried a combination KerasRegressor, the PermutationImportance class, and ELI5 and identified the most important features which consisted of the 35th through 39th codon. Specifically, 'GTTGAA' showed up in 98% of the dataset. Honestly, this is not a good method for many reasons. For starters
+- Difference types of encodings for different types of resistance methods
+- indicators being in separate regions
+- accetable variation within the regions
+I'm just trying to find an answer for what the specific gene encoding is for antibiotic resistance is. 
+Model wil work for binary prediction though. 
 
 
-# TODO: literature review
-https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10044642/
-https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9491192/
+# TODO: 
+- determine the specific gene encoding is for antibiotic resistance is
+- literature review
+    - https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10044642/
+    - https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9491192/
 
 
-## Layers:
+# Layers:
 The rationale behind this order is to start with layers that capture local patterns and gradually move towards layers that capture more global and sequential dependencies. The combination of convolutional and recurrent layers allows the model to learn hierarchical features and dependencies in the data. Additionally, the use of dropout layers helps prevent overfitting. This architecture is often effective for tasks like sequential data classification, such as sentiment analysis or text classification.
 
 1. Embedding Layer: used at the beginning to convert categorical data, such as word or integer indices, into continuous vector representations of fixed size
